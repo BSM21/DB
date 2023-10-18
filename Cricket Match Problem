@@ -1,0 +1,19 @@
+Calculate the runs per over in a T20 match of 120 balls.
+The schema should be like:
+Balls    Runs
+1        4
+2        1
+3        2
+4        6
+--      ---
+120      3
+
+The Over all Results should look like this:
+
+Overs     Run_scored_In_Over
+1          10
+2          6
+4          20
+so on...
+
+// I am solving this Problem using the ntile window function 
