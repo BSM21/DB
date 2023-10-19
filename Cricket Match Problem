@@ -17,3 +17,62 @@ Overs     Run_scored_In_Over
 so on...
 
 // I am solving this Problem using the ntile window function 
+
+
+Drop Table match_score;
+
+create table match_score(
+	balls int,
+	runs int
+);
+
+
+Select * from match_score;
+
+-- It will generate the series from 1 to 10
+select * 
+from generate_series(1,10)
+
+select balls
+from generate_series(1,120) as balls;
+
+
+-- Random function gives values in decimal from 0 to the multiplied value. Here It will gives values from 0 
+-- to 6. We are using round off function to get the nearest integer value.
+
+insert into match_score
+select balls, round(random()*6) as runs
+from generate_series(1,120) as balls;
+
+-- To see that the runs are exactly what we wanted
+select runs, count(1)
+from match_score
+group by runs
+order by runs;
+
+-- Considering we dont have 5 runs in the cricket to score. We will remove the 5 from here.
+-- I want to be replaced it either by 1 or by 2 runs.
+update match_score
+set runs = round(random()*2)
+where runs = 5;
+
+
+-- We want to count the runs in each over . So How we are going to count the first six bowls and so on
+-- I am going to use ntile window function to segregate the rows in buckets.
+-- Using 20 buckets because in t20 game 120/6 = 20.
+select *
+, ntile(20) over (order by balls) as overs
+from match_score;
+
+
+-- Now to calculate the runs based on the over. Either I can use sub query or a cte.
+-- I am using cte over here.
+with cte as 
+(		select *
+		, ntile(20) over (order by balls) as overs
+		from match_score )
+select overs, sum(runs) as runs_per_over
+from cte 
+group by overs
+order by overs;
+
